@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from datetime import date
-from gettext import gettext as _
+from bokhald.i18n import gettext_func as _, AVAILABLE_LANGUAGES
+from bokhald.settings import get_setting, set_setting
 
 from nicegui import ui
 from sqlalchemy.orm import Session
@@ -358,6 +359,20 @@ def create_main_view(session_factory) -> None:
             ui.button(_("Accounts"), on_click=lambda: open_accounts_dialog(session_factory, refresh))
             ui.button(_("Payment Methods"), on_click=lambda: open_payments_dialog(session_factory))
             ui.button(_("Transactions"), on_click=lambda: open_transactions_dialog(session_factory, refresh))
+
+            def on_language_change(e):
+                from bokhald.i18n import set_language
+                set_language(e.value)
+                set_setting("language", e.value)
+                ui.navigate.reload()
+
+            current_lang = get_setting("language")
+            lang_options = {code: name for code, name in AVAILABLE_LANGUAGES.items()}
+            ui.select(
+                lang_options,
+                value=current_lang,
+                on_change=on_language_change,
+            ).style("min-width: 120px;")
 
         show_deactivated = ui.checkbox(_("Show inactive transactions"), value=False)
 

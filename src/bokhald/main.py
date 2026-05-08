@@ -8,8 +8,10 @@ import webbrowser
 from nicegui import app, ui
 
 from bokhald.db import Base, get_engine, get_session_factory
+from bokhald.i18n import set_language
 from bokhald.models import Account, PaymentMethod, RecurringTransaction, ActualAmount  # noqa: F401
 from bokhald.seed import seed_payment_methods
+from bokhald.settings import get_setting
 
 
 HOST = "127.0.0.1"
@@ -44,6 +46,10 @@ def init_db():
 def main():
     """Run the Bokhald application."""
     session_factory = init_db()
+
+    # Initialize language from saved settings
+    lang = get_setting("language")
+    set_language(lang)
 
     @ui.page("/")
     def index():

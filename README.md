@@ -53,6 +53,26 @@ Run migrations manually if needed:
 alembic upgrade head
 ```
 
+## Translation
+
+All user-facing strings are wrapped in `_()` for gettext. To work on translations:
+
+```bash
+# Extract translatable strings from source code
+pybabel extract -F babel.cfg -o src/bokhald/i18n/messages.pot src/
+
+# Initialize a new locale (only once per language, e.g. Icelandic)
+pybabel init -i src/bokhald/i18n/messages.pot -d src/bokhald/i18n -l is
+
+# Update an existing locale after code changes
+pybabel update -i src/bokhald/i18n/messages.pot -d src/bokhald/i18n
+
+# Compile .po files to .mo for runtime use
+pybabel compile -d src/bokhald/i18n
+```
+
+Edit the `.po` files in `src/bokhald/i18n/<lang>/LC_MESSAGES/` directly or use a tool like [Poedit](https://poedit.net/).
+
 ## Project layout
 
 ```

@@ -1,0 +1,293 @@
+# Icelandic translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-05-08 15:12+0000\n"
+"PO-Revision-Date: 2026-05-08 15:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: is <LL@li.org>\n"
+"Language: is\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n%10==1 && n%100!=11 ? 0 : 1);\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.6\n"
+
+#: src/bokhald/ui/accounts.py:28
+msgid "No accounts yet."
+msgstr "Engir reikningar ennþá."
+
+#: src/bokhald/ui/accounts.py:36 src/bokhald/ui/main_view.py:337
+msgid "Balance"
+msgstr "Staða"
+
+#: src/bokhald/ui/accounts.py:37
+msgid "Margin"
+msgstr "Svigrúm"
+
+#: src/bokhald/ui/accounts.py:45 src/bokhald/ui/accounts.py:92
+msgid "New Account"
+msgstr "Nýr reikningur"
+
+#: src/bokhald/ui/accounts.py:45
+msgid "Edit Account"
+msgstr "Breyta reikningi"
+
+#: src/bokhald/ui/accounts.py:47 src/bokhald/ui/main_view.py:278
+#: src/bokhald/ui/payments.py:45 src/bokhald/ui/transactions.py:40
+msgid "Name"
+msgstr "Nafn"
+
+#: src/bokhald/ui/accounts.py:48
+msgid "Initial Balance"
+msgstr "Upphafleg staða"
+
+#: src/bokhald/ui/accounts.py:49
+msgid "Safety Margin"
+msgstr "Svigrúm"
+
+#: src/bokhald/ui/accounts.py:50
+msgid "Default account"
+msgstr "Sjálfgefinn reikningur"
+
+#: src/bokhald/ui/accounts.py:84 src/bokhald/ui/main_view.py:160
+#: src/bokhald/ui/payments.py:67 src/bokhald/ui/transactions.py:301
+msgid "Save"
+msgstr "Vista"
+
+#: src/bokhald/ui/accounts.py:85 src/bokhald/ui/main_view.py:175
+#: src/bokhald/ui/payments.py:68 src/bokhald/ui/transactions.py:249
+#: src/bokhald/ui/transactions.py:302
+msgid "Cancel"
+msgstr "Hætta við"
+
+#: src/bokhald/ui/accounts.py:91 src/bokhald/ui/main_view.py:358
+msgid "Accounts"
+msgstr "Reikningar"
+
+#: src/bokhald/ui/accounts.py:97 src/bokhald/ui/payments.py:80
+#: src/bokhald/ui/transactions.py:399
+msgid "Close"
+msgstr "Loka"
+
+#: src/bokhald/ui/main_view.py:39
+msgid "Account not found"
+msgstr "Reikningur fannst ekki"
+
+#: src/bokhald/ui/main_view.py:67
+msgid "No data to display. Add some transactions first."
+msgstr "Engin gögn. Bættu fyrst við hreyfingum."
+
+#: src/bokhald/ui/main_view.py:130
+msgid "Enter actual amount for"
+msgstr "Stimplaðu inn raunupphæð fyrir"
+
+#: src/bokhald/ui/main_view.py:131
+msgid "Amount"
+msgstr "Upphæð"
+
+#: src/bokhald/ui/main_view.py:174
+msgid "Remove actual"
+msgstr "Fjarlægja raunupphæð"
+
+#: src/bokhald/ui/main_view.py:292
+msgid "Recommended injection"
+msgstr "Ráðlögð aukning"
+
+#: src/bokhald/ui/main_view.py:306 src/bokhald/ui/main_view.py:322
+msgid "inactive"
+msgstr "óvirk"
+
+#: src/bokhald/ui/main_view.py:351
+msgid "Bokhald"
+msgstr "Bókhald"
+
+#: src/bokhald/ui/main_view.py:359 src/bokhald/ui/payments.py:74
+msgid "Payment Methods"
+msgstr "Greiðslutegundir"
+
+#: src/bokhald/ui/main_view.py:360
+msgid "Transactions"
+msgstr "Hreyfingar"
+
+#: src/bokhald/ui/main_view.py:362
+msgid "Show inactive transactions"
+msgstr "Sýna óvirkar hreyfingar"
+
+#: src/bokhald/ui/main_view.py:385
+msgid "No accounts yet. Create one to get started."
+msgstr "Engir reikningar ennþá. Stofnaðu reikning fyrst."
+
+#: src/bokhald/ui/payments.py:26
+msgid "No payment methods."
+msgstr "Engar greiðslutegundir."
+
+#: src/bokhald/ui/payments.py:41 src/bokhald/ui/payments.py:75
+msgid "New Payment Method"
+msgstr "Ný greiðslutegund"
+
+#: src/bokhald/ui/payments.py:41
+msgid "Edit Payment Method"
+msgstr "Breyta greiðslutegund"
+
+#: src/bokhald/ui/payments.py:46 src/bokhald/ui/transactions.py:42
+msgid "Description"
+msgstr "Lýsing"
+
+#: src/bokhald/ui/payments.py:47
+msgid "URL (optional)"
+msgstr "Vefslóð (valfrjáls)"
+
+#: src/bokhald/ui/transactions.py:29
+msgid "Create an account first."
+msgstr "Stofnaðu reikning fyrst."
+
+#: src/bokhald/ui/transactions.py:32
+msgid "No payment methods available."
+msgstr "Engar greiðslutegundir skráðar."
+
+#: src/bokhald/ui/transactions.py:36 src/bokhald/ui/transactions.py:392
+msgid "New Transaction"
+msgstr "Ný hreyfing"
+
+#: src/bokhald/ui/transactions.py:36
+msgid "Edit Transaction"
+msgstr "Breyta hreyfingu"
+
+#: src/bokhald/ui/transactions.py:41
+msgid "Payee"
+msgstr "Viðtakandi"
+
+#: src/bokhald/ui/transactions.py:46
+msgid "Amount (positive=injection, negative=bill)"
+msgstr "Upphæð (jákvæð=innlögn, neikvæð=útgjöld)"
+
+#: src/bokhald/ui/transactions.py:50
+msgid "Estimate"
+msgstr "Áætlun"
+
+#: src/bokhald/ui/transactions.py:56
+msgid "Day of month"
+msgstr "Dagur mánaðar"
+
+#: src/bokhald/ui/transactions.py:61
+msgid "Active months (e.g. 1-12, 1-3,7,12)"
+msgstr "Virkir mánuðir (t.d. 1-12, 1-3, 7, 12)"
+
+#: src/bokhald/ui/transactions.py:67
+msgid "Account"
+msgstr "Reikningur"
+
+#: src/bokhald/ui/transactions.py:75
+msgid "Payment Method"
+msgstr "Greiðslutegund"
+
+#: src/bokhald/ui/transactions.py:84
+msgid "Internal transfer"
+msgstr "Eigin reikningar"
+
+#: src/bokhald/ui/transactions.py:90
+msgid "Target Account"
+msgstr "Móttökureikningur"
+
+#: src/bokhald/ui/transactions.py:100
+msgid "Start month"
+msgstr "Upphafsmánuður"
+
+#: src/bokhald/ui/transactions.py:105
+msgid "Start year"
+msgstr "Upphafsár"
+
+#: src/bokhald/ui/transactions.py:111
+msgid "Has end date"
+msgstr "Hefur endadagsetningu"
+
+#: src/bokhald/ui/transactions.py:115
+msgid "End month"
+msgstr "Lokamánuður"
+
+#: src/bokhald/ui/transactions.py:120
+msgid "End year"
+msgstr "Lokaár"
+
+#: src/bokhald/ui/transactions.py:129
+msgid "Amount Changes"
+msgstr "Breyting upphæðar"
+
+#: src/bokhald/ui/transactions.py:130
+msgid "Initial amount applies until the first change date."
+msgstr "Upphafleg upphæð á við fram að upphafsdegi fyrstu breytingar."
+
+#: src/bokhald/ui/transactions.py:168
+msgid "Month"
+msgstr "Mánuður"
+
+#: src/bokhald/ui/transactions.py:169
+msgid "Year"
+msgstr "Ár"
+
+#: src/bokhald/ui/transactions.py:170
+msgid "New amount"
+msgstr "Ný upphæð"
+
+#: src/bokhald/ui/transactions.py:177
+msgid "Enter an amount"
+msgstr "Stimplaðu inn upphæð"
+
+#: src/bokhald/ui/transactions.py:221
+msgid "Reactivate"
+msgstr "Virkja aftur"
+
+#: src/bokhald/ui/transactions.py:231
+msgid "Deactivate"
+msgstr "Óvirkja"
+
+#: src/bokhald/ui/transactions.py:235
+msgid "Are you sure you want to permanently delete this transaction?"
+msgstr "Ertu viss um að þú viljir eyða þessari hreyfingu?"
+
+#: src/bokhald/ui/transactions.py:236
+msgid "This will also delete all actual amounts and amount changes."
+msgstr "Það mun einnig eyða öllum skráðum raunupphæðum og breytingum á upphæðum."
+
+#: src/bokhald/ui/transactions.py:248 src/bokhald/ui/transactions.py:251
+msgid "Delete"
+msgstr "Eyða"
+
+#: src/bokhald/ui/transactions.py:352
+msgid "No transactions yet."
+msgstr "Engar hreyfingar ennþá."
+
+#: src/bokhald/ui/transactions.py:363
+msgid "Injection"
+msgstr "Innlögn"
+
+#: src/bokhald/ui/transactions.py:363
+msgid "Bill"
+msgstr "Útgjöld"
+
+#: src/bokhald/ui/transactions.py:379
+msgid "Est."
+msgstr "Áætl."
+
+#: src/bokhald/ui/transactions.py:379
+msgid "Fixed"
+msgstr "Föst"
+
+#: src/bokhald/ui/transactions.py:382
+msgid "Inactive"
+msgstr "Óvirk"
+
+#: src/bokhald/ui/transactions.py:390
+msgid "Recurring Transactions"
+msgstr "Endurteknar hreyfingar"
+
+#: src/bokhald/ui/transactions.py:391
+msgid "Show inactive"
+msgstr "Sýna óvirkar"

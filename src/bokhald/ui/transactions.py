@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from gettext import gettext as _
+from bokhald.i18n import gettext_func as _
 
 from nicegui import ui
 

@@ -20,6 +20,10 @@ bokhald = "bokhald.main:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+bokhald = ["i18n/*/LC_MESSAGES/*.mo"]
+
 [tool.babel.extract]
 mapping_file = "babel.cfg"
+input_paths = "src/"
 output_file = "src/bokhald/i18n/messages.pot"
