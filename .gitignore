@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Nix
+result
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Babel
+messages.pot

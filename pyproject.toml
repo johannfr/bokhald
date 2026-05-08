@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bokhald"
+version = "0.1.0"
+description = "Personal finance/accounting software"
+requires-python = ">=3.12"
+dependencies = [
+    "nicegui>=2.0",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "babel>=2.14",
+]
+
+[project.scripts]
+bokhald = "bokhald.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.babel.extract]
+mapping_file = "babel.cfg"
+output_file = "src/bokhald/i18n/messages.pot"
