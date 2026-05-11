@@ -51,6 +51,7 @@
                 ps.babel
               ]))
             ];
+            env.BOKHALD_DEV = "1";
           };
         }
       );

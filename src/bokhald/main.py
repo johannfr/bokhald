@@ -56,7 +56,8 @@ def main():
         from bokhald.ui.main_view import create_main_view
         create_main_view(session_factory)
 
-    ui.run(host=HOST, port=PORT, title="Bokhald", reload=True, show=True)
+    dev_mode = os.environ.get("BOKHALD_DEV", "").lower() in ("1", "true", "yes")
+    ui.run(host=HOST, port=PORT, title="Bokhald", reload=dev_mode, show=dev_mode)
 
 
 if __name__ in {"__main__", "__mp_main__"}:
