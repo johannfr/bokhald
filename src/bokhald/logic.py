@@ -211,16 +211,25 @@ def calculate_recommended_injection(
 
     safety_margin = float(account.safety_margin)
 
-    # Find the worst (lowest) balance across all projected months
-    min_balance = min(md.balance for md in projection)
+    # Find current month index — the injection only applies from now onward
+    today = date.today()
+    current_idx = 0
+    for i, md in enumerate(projection):
+        if (md.year, md.month) >= (today.year, today.month):
+            current_idx = i
+            break
 
-    # For each month k, an extra injection of X per month raises its balance
-    # by k*X. We need b[k] + k*X >= safety_margin for all k, so
-    # X >= (safety_margin - b[k]) / k. Take the max across all months.
+    future = projection[current_idx:]
+    if not future:
+        return 0.0
+
+    # For a month k steps into the future (0-indexed), changing the injection
+    # by X per month shifts its balance by (k+1)*X (since the injection is
+    # applied in months 0..k). We need b[k] + (k+1)*X >= safety_margin, so
+    # X >= (safety_margin - b[k]) / (k+1). Take the max across all months.
     required = max(
-        (safety_margin - md.balance) / i
-        for i, md in enumerate(projection)
-        if i > 0
+        (safety_margin - md.balance) / (k + 1)
+        for k, md in enumerate(future)
     )
 
     return round(required, 2)
