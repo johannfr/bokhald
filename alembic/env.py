@@ -6,7 +6,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from bokhald.db import Base, get_db_path
-from bokhald.models import Account, PaymentMethod, RecurringTransaction, ActualAmount  # noqa: F401
+from bokhald.models import Account, PaymentMethod, RecurringTransaction, ActualAmount, AmountChange  # noqa: F401
 
 config = context.config
 

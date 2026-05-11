@@ -125,10 +125,42 @@ def create_main_view(session_factory) -> None:
                 .filter_by(recurring_transaction_id=txn_id, year=year, month=month)
                 .first()
             )
-            current_val = float(existing.actual_amount) if existing else None
+
+            # Determine the display value for the current account's perspective
+            if existing:
+                raw_val = float(existing.actual_amount)
+                if txn.is_internal:
+                    entered_from = existing.entered_from_account_id
+                    is_incoming = txn.target_account_id == account_id
+                    if is_incoming:
+                        if entered_from == account_id:
+                            current_val = raw_val
+                        else:
+                            current_val = abs(raw_val)
+                    else:
+                        if entered_from is not None and entered_from != account_id:
+                            current_val = -abs(raw_val)
+                        else:
+                            current_val = raw_val
+                else:
+                    current_val = raw_val
+            else:
+                current_val = None
+
+            is_internal = txn.is_internal
+            txn_account_id = txn.account_id
+            source_account_name = txn.account.name if txn.account else ""
+            target_account_name = txn.target_account.name if txn.target_account else ""
+
+        # Determine which account name to show for context
+        viewing_account_name = target_account_name if (is_internal and account_id != txn_account_id) else source_account_name
 
         with ui.dialog() as dialog, ui.card():
             ui.label(f"{_('Enter actual amount for')} {MONTH_ABBR[month]} {year}")
+            if is_internal:
+                ui.label(
+                    f"{_('Entering from account')}: {viewing_account_name}"
+                ).style("font-size: 0.85em; color: #666;")
             amount_input = ui.number(label=_("Amount"), value=current_val)
 
             with ui.row():
@@ -146,6 +178,7 @@ def create_main_view(session_factory) -> None:
                                 session.commit()
                         elif existing:
                             existing.actual_amount = amount_input.value
+                            existing.entered_from_account_id = account_id
                             session.commit()
                         else:
                             session.add(ActualAmount(
@@ -153,6 +186,7 @@ def create_main_view(session_factory) -> None:
                                 year=year,
                                 month=month,
                                 actual_amount=amount_input.value,
+                                entered_from_account_id=account_id,
                             ))
                             session.commit()
                     dialog.close()

@@ -126,9 +126,12 @@ def build_projection(
         .all()
     ) if txn_ids else []
 
-    actual_lookup: dict[tuple[int, int, int], float] = {}
+    actual_lookup: dict[tuple[int, int, int], tuple[float, int | None]] = {}
     for a in actuals:
-        actual_lookup[(a.recurring_transaction_id, a.year, a.month)] = float(a.actual_amount)
+        actual_lookup[(a.recurring_transaction_id, a.year, a.month)] = (
+            float(a.actual_amount),
+            a.entered_from_account_id,
+        )
 
     # Build amount changes lookup: txn_id -> sorted list of (effective_year, effective_month, amount)
     amount_changes: list[AmountChange] = (
@@ -170,13 +173,36 @@ def build_projection(
                 continue
 
             actual_key = (txn.id, year, month)
+            is_incoming = txn in incoming_txns
+
             if actual_key in actual_lookup:
-                amount = actual_lookup[actual_key]
+                raw_amount, entered_from = actual_lookup[actual_key]
                 is_actual = True
+
+                if txn.is_internal:
+                    entered_from_target = (entered_from == account.id) if is_incoming else (entered_from is not None and entered_from != account.id)
+                    if is_incoming:
+                        # Viewing from target account side
+                        if entered_from_target:
+                            # Entered from this (target) side — use as-is
+                            amount = raw_amount
+                        else:
+                            # Entered from source side — flip sign
+                            amount = abs(raw_amount)
+                    else:
+                        # Viewing from source account side
+                        if entered_from_target:
+                            # Entered from target side — flip sign
+                            amount = -abs(raw_amount)
+                        else:
+                            # Entered from source side — use as-is
+                            amount = raw_amount
+                else:
+                    amount = raw_amount
             else:
                 # For internal transfers: if this is an incoming transfer,
                 # the amount is the inverse (positive for the target account)
-                if txn in incoming_txns:
+                if is_incoming:
                     amount = abs(_get_effective_amount(txn.id, float(txn.amount), year, month))
                 else:
                     amount = _get_effective_amount(txn.id, float(txn.amount), year, month)

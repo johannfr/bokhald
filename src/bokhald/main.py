@@ -25,14 +25,9 @@ def init_db():
     alembic_cfg = Config("alembic.ini")
 
     engine = get_engine()
-    # Create all tables (in case no migrations exist yet)
-    Base.metadata.create_all(engine)
 
-    # Stamp with head if this is a fresh database
-    try:
-        command.stamp(alembic_cfg, "head")
-    except Exception:
-        pass
+    # Run all pending migrations (also creates tables on a fresh DB)
+    command.upgrade(alembic_cfg, "head")
 
     # Seed default data
     session_factory = get_session_factory(engine)

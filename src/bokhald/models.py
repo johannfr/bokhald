@@ -113,10 +113,16 @@ class ActualAmount(Base):
     year: Mapped[int] = mapped_column(Integer, nullable=False)
     month: Mapped[int] = mapped_column(Integer, nullable=False)
     actual_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    entered_from_account_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("accounts.id"), nullable=True
+    )
 
     # Relationships
     recurring_transaction: Mapped["RecurringTransaction"] = relationship(
         "RecurringTransaction", back_populates="actual_amounts"
+    )
+    entered_from_account: Mapped["Account | None"] = relationship(
+        "Account", foreign_keys=[entered_from_account_id]
     )
 
     def __repr__(self) -> str:

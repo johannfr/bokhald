@@ -28,7 +28,8 @@ bokhald/
 │   └── versions/
 │       ├── 8cb3aa67ffb6_initial_schema.py
 │       ├── 9119de706bcb_add_payee_to_recurring_transactions.py
-│       └── a3f1c8d92e4a_add_amount_changes_table.py
+│       ├── a3f1c8d92e4a_add_amount_changes_table.py
+│       └── b4e2f9a01c3d_add_entered_from_account_id_to_actual_.py
 ├── src/bokhald/
 │   ├── __init__.py
 │   ├── main.py                   (entry point, inits DB, runs migrations, starts NiceGUI)
@@ -66,6 +67,7 @@ bokhald/
 
 ### ActualAmount
 - `recurring_transaction_id`, `year`, `month`, `actual_amount`
+- `entered_from_account_id` — FK to `accounts.id`, records which account the user was viewing when entering the actual (needed for internal transfers to determine sign flipping)
 - Unique on `(recurring_transaction_id, year, month)`
 - Tracks what was actually paid on estimate transactions
 
