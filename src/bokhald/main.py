@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import threading
 import webbrowser
 
@@ -14,7 +15,7 @@ from bokhald.seed import seed_payment_methods
 from bokhald.settings import get_setting
 
 
-HOST = "127.0.0.1"
+HOST = os.environ.get("BOKHALD_HOST", "127.0.0.1")
 PORT = 8080
 
 

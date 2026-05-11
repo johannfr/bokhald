@@ -1,0 +1,13 @@
+services:
+  bokhald:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - bokhald-data:/data
+    environment:
+      - BOKHALD_HOST=0.0.0.0
+      - BOKHALD_DATA_DIR=/data
+
+volumes:
+  bokhald-data:
