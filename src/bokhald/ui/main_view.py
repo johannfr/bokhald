@@ -292,7 +292,7 @@ def create_main_view(session_factory) -> None:
                         "padding: 4px 8px; border: 1px solid #ddd; font-weight: bold;"
                     ).props(f'innerHTML="{_("Recommended injection")}"')
                     for md in proj_data:
-                        val = f"{recommended:,.0f}" if recommended > 0 else "0"
+                        val = f"{recommended:,.0f}"
                         ui.element("td").style(
                             "text-align: right; padding: 4px 8px; border: 1px solid #ddd; "
                             "color: #1565c0; font-weight: bold;"

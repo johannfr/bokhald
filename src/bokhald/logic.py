@@ -202,7 +202,7 @@ def calculate_recommended_injection(
     """Calculate the minimum monthly injection needed so the balance
     never drops below the safety margin.
 
-    Returns 0 if no additional injection is needed.
+    Returns a negative value if current injections exceed what is needed.
     """
     projection = build_projection(session, account, num_future_months)
 
@@ -214,11 +214,7 @@ def calculate_recommended_injection(
     # Find the worst (lowest) balance across all projected months
     min_balance = min(md.balance for md in projection)
 
-    if min_balance >= safety_margin:
-        return 0.0
-
-    # We need to raise the balance by (safety_margin - min_balance)
-    # distributed across the months up to that point
+    # Positive = shortfall (need more injection), negative = excess (injecting too much)
     shortfall = safety_margin - min_balance
 
     # Simple approach: how much per month to cover the shortfall
