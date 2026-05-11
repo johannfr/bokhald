@@ -214,12 +214,13 @@ def calculate_recommended_injection(
     # Find the worst (lowest) balance across all projected months
     min_balance = min(md.balance for md in projection)
 
-    # Positive = shortfall (need more injection), negative = excess (injecting too much)
-    shortfall = safety_margin - min_balance
+    # For each month k, an extra injection of X per month raises its balance
+    # by k*X. We need b[k] + k*X >= safety_margin for all k, so
+    # X >= (safety_margin - b[k]) / k. Take the max across all months.
+    required = max(
+        (safety_margin - md.balance) / i
+        for i, md in enumerate(projection)
+        if i > 0
+    )
 
-    # Simple approach: how much per month to cover the shortfall
-    # We need to find how many months until the minimum point
-    min_month_idx = next(i for i, md in enumerate(projection) if md.balance == min_balance)
-    months_until_min = max(min_month_idx, 1)
-
-    return round(shortfall / months_until_min, 2)
+    return round(required, 2)
