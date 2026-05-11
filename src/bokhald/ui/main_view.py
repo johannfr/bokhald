@@ -98,6 +98,7 @@ def create_main_view(session_factory) -> None:
                     "start_month": t.start_month,
                     "end_year": t.end_year,
                     "end_month": t.end_month,
+                    "is_one_time": t.is_one_time,
                 })
 
             proj_data = []
@@ -383,7 +384,7 @@ def create_main_view(session_factory) -> None:
     # Main page layout
     from bokhald.ui.accounts import open_accounts_dialog
     from bokhald.ui.payments import open_payments_dialog
-    from bokhald.ui.transactions import open_transactions_dialog
+    from bokhald.ui.transactions import open_transactions_dialog, open_one_time_transactions_dialog
 
     def on_language_change(e):
         from bokhald.i18n import set_language
@@ -398,6 +399,7 @@ def create_main_view(session_factory) -> None:
         ui.button(_("Accounts"), on_click=lambda: open_accounts_dialog(session_factory, refresh)).classes('w-full')
         ui.button(_("Payment Methods"), on_click=lambda: open_payments_dialog(session_factory)).classes('w-full')
         ui.button(_("Transactions"), on_click=lambda: open_transactions_dialog(session_factory, refresh)).classes('w-full')
+        ui.button(_("One-time Transactions"), on_click=lambda: open_one_time_transactions_dialog(session_factory, refresh)).classes('w-full')
         ui.space()
         ui.separator().classes('q-my-sm')
         ui.select(lang_options, value=current_lang, on_change=on_language_change).classes('w-full')
@@ -419,6 +421,8 @@ def create_main_view(session_factory) -> None:
 
         spreadsheet_container = ui.element("div").style("width: 100%;")
 
+        current_account_id = None
+
         def refresh():
             """Refresh everything."""
             nonlocal accounts, default_account
@@ -428,6 +432,7 @@ def create_main_view(session_factory) -> None:
             build_tabs()
 
         def build_tabs():
+            nonlocal current_account_id
             account_tabs_container.clear()
             with account_tabs_container:
                 if not accounts:
@@ -436,22 +441,35 @@ def create_main_view(session_factory) -> None:
 
                 with ui.tabs().props("dense") as tabs:
                     tab_map = {}
+                    name_map = {}
                     for acc in accounts:
                         t = ui.tab(acc.name)
                         tab_map[acc.name] = acc.id
+                        name_map[acc.id] = acc.name
 
-                with ui.tab_panels(tabs, on_change=lambda e: render_spreadsheet(tab_map.get(e.value, 0))):
+                def on_tab_change(e):
+                    nonlocal current_account_id
+                    acc_id = tab_map.get(e.value, 0)
+                    current_account_id = acc_id
+                    render_spreadsheet(acc_id)
+
+                with ui.tab_panels(tabs, on_change=on_tab_change):
                     for acc in accounts:
                         with ui.tab_panel(acc.name):
                             pass
 
-                # Select default account
-                if default_account:
+                # Restore previously selected account, or fall back to default
+                restore_id = current_account_id
+                if restore_id and restore_id in name_map:
+                    tabs.set_value(name_map[restore_id])
+                    render_spreadsheet(restore_id)
+                elif default_account:
+                    current_account_id = default_account.id
                     tabs.set_value(default_account.name)
                     render_spreadsheet(default_account.id)
 
         show_deactivated.on_value_change(lambda: render_spreadsheet(
-            default_account.id if default_account else 0
+            current_account_id or (default_account.id if default_account else 0)
         ))
 
         build_tabs()

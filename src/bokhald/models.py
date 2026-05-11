@@ -64,6 +64,7 @@ class RecurringTransaction(Base):
     months_active: Mapped[str] = mapped_column(String(50), nullable=False, default="1-12")
     payment_method_id: Mapped[int] = mapped_column(Integer, ForeignKey("payment_methods.id"), nullable=False)
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
+    is_one_time: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_internal: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     target_account_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=True)
     start_year: Mapped[int] = mapped_column(Integer, nullable=False)

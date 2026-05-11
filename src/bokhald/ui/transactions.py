@@ -10,7 +10,7 @@ from nicegui import ui
 from bokhald.models import Account, AmountChange, PaymentMethod, RecurringTransaction
 
 
-def open_transaction_edit(session_factory, txn: dict | None = None, on_save_callback=None) -> None:
+def open_transaction_edit(session_factory, txn: dict | None = None, on_save_callback=None, default_one_time: bool = False) -> None:
     """Open edit/create dialog for a single recurring transaction.
 
     Can be called standalone (e.g. from the main spreadsheet view) or from the
@@ -51,7 +51,26 @@ def open_transaction_edit(session_factory, txn: dict | None = None, on_save_call
                 value=False if is_new else txn["is_estimate"],
             )
 
-        with ui.row():
+        today = date.today()
+        one_time_check = ui.checkbox(
+            _("One-time transaction"),
+            value=default_one_time if is_new else txn.get("is_one_time", False),
+        )
+
+        # One-time date field (date picker)
+        one_time_row = ui.column()
+        one_time_row.bind_visibility_from(one_time_check, "value")
+        with one_time_row:
+            if is_new:
+                initial_date = today.isoformat()
+            else:
+                initial_date = f"{txn['start_year']}-{txn['start_month']:02d}-{txn['day_of_month']:02d}"
+            ot_date_input = ui.date(value=initial_date)
+
+        # Recurring-specific fields (hidden when one-time)
+        recurring_row = ui.row()
+        recurring_row.bind_visibility_from(one_time_check, "value", backward=lambda v: not v)
+        with recurring_row:
             day_input = ui.number(
                 label=_("Day of month"),
                 value=1 if is_new else txn["day_of_month"],
@@ -94,8 +113,9 @@ def open_transaction_edit(session_factory, txn: dict | None = None, on_save_call
         )
         target_select.bind_visibility_from(internal_check, "value")
 
-        today = date.today()
-        with ui.row():
+        start_row = ui.row()
+        start_row.bind_visibility_from(one_time_check, "value", backward=lambda v: not v)
+        with start_row:
             start_month_input = ui.number(
                 label=_("Start month"),
                 value=today.month if is_new else txn["start_month"],
@@ -106,7 +126,9 @@ def open_transaction_edit(session_factory, txn: dict | None = None, on_save_call
                 value=today.year if is_new else txn["start_year"],
             )
 
-        with ui.row():
+        end_row = ui.row()
+        end_row.bind_visibility_from(one_time_check, "value", backward=lambda v: not v)
+        with end_row:
             has_end = ui.checkbox(
                 _("Has end date"),
                 value=False if is_new else (txn["end_year"] is not None),
@@ -256,6 +278,23 @@ def open_transaction_edit(session_factory, txn: dict | None = None, on_save_call
                 method_id = method_options.get(method_select.value)
                 target_id = account_options.get(target_select.value) if internal_check.value else None
 
+                is_ot = one_time_check.value
+                if is_ot:
+                    ot_date = date.fromisoformat(ot_date_input.value)
+                    s_month = ot_date.month
+                    s_year = ot_date.year
+                    s_day = ot_date.day
+                    e_month = s_month
+                    e_year = s_year
+                    m_active = str(s_month)
+                else:
+                    s_month = int(start_month_input.value)
+                    s_year = int(start_year_input.value)
+                    s_day = int(day_input.value)
+                    e_month = int(end_month_input.value) if has_end.value else None
+                    e_year = int(end_year_input.value) if has_end.value else None
+                    m_active = months_input.value
+
                 with session_factory() as session:
                     if is_new:
                         session.add(RecurringTransaction(
@@ -264,16 +303,17 @@ def open_transaction_edit(session_factory, txn: dict | None = None, on_save_call
                             description=desc_input.value,
                             amount=amount_input.value,
                             is_estimate=estimate_check.value,
-                            day_of_month=int(day_input.value),
-                            months_active=months_input.value,
+                            is_one_time=is_ot,
+                            day_of_month=s_day,
+                            months_active=m_active,
                             payment_method_id=method_id,
                             account_id=acc_id,
                             is_internal=internal_check.value,
                             target_account_id=target_id,
-                            start_year=int(start_year_input.value),
-                            start_month=int(start_month_input.value),
-                            end_year=int(end_year_input.value) if has_end.value else None,
-                            end_month=int(end_month_input.value) if has_end.value else None,
+                            start_year=s_year,
+                            start_month=s_month,
+                            end_year=e_year,
+                            end_month=e_month,
                         ))
                     else:
                         existing = session.get(RecurringTransaction, txn["id"])
@@ -282,16 +322,17 @@ def open_transaction_edit(session_factory, txn: dict | None = None, on_save_call
                         existing.description = desc_input.value
                         existing.amount = amount_input.value
                         existing.is_estimate = estimate_check.value
-                        existing.day_of_month = int(day_input.value)
-                        existing.months_active = months_input.value
+                        existing.is_one_time = is_ot
+                        existing.day_of_month = s_day
+                        existing.months_active = m_active
                         existing.payment_method_id = method_id
                         existing.account_id = acc_id
                         existing.is_internal = internal_check.value
                         existing.target_account_id = target_id
-                        existing.start_year = int(start_year_input.value)
-                        existing.start_month = int(start_month_input.value)
-                        existing.end_year = int(end_year_input.value) if has_end.value else None
-                        existing.end_month = int(end_month_input.value) if has_end.value else None
+                        existing.start_year = s_year
+                        existing.start_month = s_month
+                        existing.end_year = e_year
+                        existing.end_month = e_month
                     session.commit()
 
                 edit_dialog.close()
@@ -338,6 +379,7 @@ def open_transactions_dialog(session_factory, on_save_callback=None) -> None:
                     "end_year": t.end_year,
                     "end_month": t.end_month,
                     "deactivated": t.deactivated_at is not None,
+                    "is_one_time": t.is_one_time,
                 })
 
             # Sort: injections first, then bills; within each group by payee, then name
@@ -354,6 +396,8 @@ def open_transactions_dialog(session_factory, on_save_callback=None) -> None:
 
             # Show injections first, then bills
             for txn in txn_data:
+                if txn["is_one_time"]:
+                    continue
                 if not show_inactive_check.value and txn["deactivated"]:
                     continue
 
@@ -391,6 +435,96 @@ def open_transactions_dialog(session_factory, on_save_callback=None) -> None:
             show_inactive_check = ui.checkbox(_("Show inactive"), value=False, on_change=lambda: refresh_list())
             ui.button(_("New Transaction"), on_click=lambda: open_transaction_edit(
                 session_factory, on_save_callback=lambda: (refresh_list(), on_save_callback() if on_save_callback else None)
+            ))
+
+        txn_list = ui.column().style("width: 100%; overflow-y: auto;")
+        refresh_list()
+
+        ui.button(_("Close"), on_click=dialog.close).props("flat")
+
+    dialog.open()
+
+
+def open_one_time_transactions_dialog(session_factory, on_save_callback=None) -> None:
+    """Open a dialog for managing one-time transactions."""
+
+    def refresh_list():
+        txn_list.clear()
+        with session_factory() as session:
+            txns = (
+                session.query(RecurringTransaction)
+                .filter_by(is_one_time=True)
+                .order_by(RecurringTransaction.start_year, RecurringTransaction.start_month, RecurringTransaction.name)
+                .all()
+            )
+            txn_data = []
+            for t in txns:
+                txn_data.append({
+                    "id": t.id,
+                    "name": t.name,
+                    "payee": t.payee,
+                    "description": t.description,
+                    "amount": float(t.amount),
+                    "is_estimate": t.is_estimate,
+                    "day_of_month": t.day_of_month,
+                    "months_active": t.months_active,
+                    "payment_method_id": t.payment_method_id,
+                    "payment_method_name": t.payment_method.name,
+                    "account_id": t.account_id,
+                    "account_name": t.account.name,
+                    "is_internal": t.is_internal,
+                    "target_account_id": t.target_account_id,
+                    "target_account_name": t.target_account.name if t.target_account else None,
+                    "start_year": t.start_year,
+                    "start_month": t.start_month,
+                    "end_year": t.end_year,
+                    "end_month": t.end_month,
+                    "deactivated": t.deactivated_at is not None,
+                    "is_one_time": t.is_one_time,
+                })
+
+        with txn_list:
+            if not txn_data:
+                ui.label(_("No one-time transactions yet."))
+                return
+
+            for txn in txn_data:
+                if not show_inactive_check.value and txn["deactivated"]:
+                    continue
+
+                is_inj = txn["amount"] > 0
+                color = "#e8f5e9" if is_inj else "#ffebee"
+                opacity = "opacity: 0.5;" if txn["deactivated"] else ""
+
+                def make_on_save(t=txn):
+                    def cb():
+                        refresh_list()
+                        if on_save_callback:
+                            on_save_callback()
+                    return cb
+
+                with ui.card().style(f"width: 100%; padding: 8px; margin-bottom: 4px; background: {color}; {opacity}"):
+                    with ui.row().style("align-items: center; width: 100%; flex-wrap: nowrap; gap: 8px;"):
+                        ui.label(f"{txn['payee']} - {txn['name']}").style("font-weight: bold; width: 220px; min-width: 220px; max-width: 220px; word-wrap: break-word;")
+                        ui.label(f"{txn['amount']:,.0f}").style("width: 90px; min-width: 90px; max-width: 90px; text-align: right;")
+                        ui.label(f"{txn['start_month']:02d}/{txn['start_year']}").style("width: 70px; min-width: 70px; max-width: 70px; font-size: 12px;")
+                        ui.label(f"{txn['account_name']}").style("width: 110px; min-width: 110px; max-width: 110px; font-size: 12px; word-wrap: break-word;")
+                        ui.label(f"{txn['payment_method_name']}").style("width: 110px; min-width: 110px; max-width: 110px; font-size: 12px; word-wrap: break-word;")
+                        est = _("Est.") if txn["is_estimate"] else _("Fixed")
+                        ui.label(est).style("width: 40px; min-width: 40px; max-width: 40px; font-size: 12px;")
+                        if txn["deactivated"]:
+                            ui.badge(_("Inactive"), color="grey")
+                        ui.space()
+                        ui.button(icon="edit", on_click=lambda t=txn: open_transaction_edit(
+                            session_factory, t, on_save_callback=make_on_save(t)
+                        )).props("flat dense")
+
+    with ui.dialog() as dialog, ui.card().style("min-width: 900px; max-height: 80vh;"):
+        with ui.row().style("align-items: center; width: 100%;"):
+            ui.label(_("One-time Transactions")).style("font-size: 20px; font-weight: bold; flex: 1;")
+            show_inactive_check = ui.checkbox(_("Show inactive"), value=False, on_change=lambda: refresh_list())
+            ui.button(_("New Transaction"), on_click=lambda: open_transaction_edit(
+                session_factory, default_one_time=True, on_save_callback=lambda: (refresh_list(), on_save_callback() if on_save_callback else None)
             ))
 
         txn_list = ui.column().style("width: 100%; overflow-y: auto;")
