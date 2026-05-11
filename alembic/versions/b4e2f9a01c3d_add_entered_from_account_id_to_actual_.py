@@ -19,17 +19,20 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        'actual_amounts',
-        sa.Column('entered_from_account_id', sa.Integer(), nullable=True),
-    )
-    op.create_foreign_key(
-        'fk_actual_amounts_entered_from_account',
-        'actual_amounts',
-        'accounts',
-        ['entered_from_account_id'],
-        ['id'],
-    )
+    conn = op.get_bind()
+    columns = [row[1] for row in conn.execute(sa.text("PRAGMA table_info('actual_amounts')"))]
+    if 'entered_from_account_id' not in columns:
+        op.add_column(
+            'actual_amounts',
+            sa.Column('entered_from_account_id', sa.Integer(), nullable=True),
+        )
+        op.create_foreign_key(
+            'fk_actual_amounts_entered_from_account',
+            'actual_amounts',
+            'accounts',
+            ['entered_from_account_id'],
+            ['id'],
+        )
 
 
 def downgrade() -> None:
