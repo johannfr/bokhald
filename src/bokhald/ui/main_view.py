@@ -347,32 +347,32 @@ def create_main_view(session_factory) -> None:
                         ).props(f'innerHTML="{balance:,.0f}"')
 
     # Main page layout
+    from bokhald.ui.accounts import open_accounts_dialog
+    from bokhald.ui.payments import open_payments_dialog
+    from bokhald.ui.transactions import open_transactions_dialog
+
+    def on_language_change(e):
+        from bokhald.i18n import set_language
+        set_language(e.value)
+        set_setting("language", e.value)
+        ui.navigate.reload()
+
+    current_lang = get_setting("language")
+    lang_options = {code: name for code, name in AVAILABLE_LANGUAGES.items()}
+
+    with ui.left_drawer(value=False) as drawer:
+        ui.button(_("Accounts"), on_click=lambda: open_accounts_dialog(session_factory, refresh)).classes('w-full')
+        ui.button(_("Payment Methods"), on_click=lambda: open_payments_dialog(session_factory)).classes('w-full')
+        ui.button(_("Transactions"), on_click=lambda: open_transactions_dialog(session_factory, refresh)).classes('w-full')
+        ui.space()
+        ui.separator().classes('q-my-sm')
+        ui.select(lang_options, value=current_lang, on_change=on_language_change).classes('w-full')
+
+    with ui.header().classes('items-center q-px-md'):
+        ui.button(icon='menu', on_click=lambda: drawer.toggle()).props('flat color=white')
+        ui.label(_("Bokhald")).classes('text-h6 q-ml-sm')
+
     with ui.column().style("width: 100%; padding: 16px;"):
-        with ui.row().style("align-items: center; gap: 16px; margin-bottom: 16px;"):
-            ui.label(_("Bokhald")).style("font-size: 24px; font-weight: bold;")
-            ui.space()
-
-            from bokhald.ui.accounts import open_accounts_dialog
-            from bokhald.ui.payments import open_payments_dialog
-            from bokhald.ui.transactions import open_transactions_dialog
-
-            ui.button(_("Accounts"), on_click=lambda: open_accounts_dialog(session_factory, refresh))
-            ui.button(_("Payment Methods"), on_click=lambda: open_payments_dialog(session_factory))
-            ui.button(_("Transactions"), on_click=lambda: open_transactions_dialog(session_factory, refresh))
-
-            def on_language_change(e):
-                from bokhald.i18n import set_language
-                set_language(e.value)
-                set_setting("language", e.value)
-                ui.navigate.reload()
-
-            current_lang = get_setting("language")
-            lang_options = {code: name for code, name in AVAILABLE_LANGUAGES.items()}
-            ui.select(
-                lang_options,
-                value=current_lang,
-                on_change=on_language_change,
-            ).style("min-width: 120px;")
 
         show_deactivated = ui.checkbox(_("Show inactive transactions"), value=False)
 

@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import os
-import threading
-import webbrowser
 
 from nicegui import app, ui
 
@@ -58,16 +56,8 @@ def main():
         from bokhald.ui.main_view import create_main_view
         create_main_view(session_factory)
 
-    # Open browser after a short delay
-    def open_browser():
-        import time
-        time.sleep(1.5)
-        webbrowser.open(f"http://{HOST}:{PORT}")
-
-    threading.Thread(target=open_browser, daemon=True).start()
-
-    ui.run(host=HOST, port=PORT, title="Bokhald", reload=False, show=False)
+    ui.run(host=HOST, port=PORT, title="Bokhald", reload=True, show=True)
 
 
-if __name__ == "__main__":
+if __name__ in {"__main__", "__mp_main__"}:
     main()
